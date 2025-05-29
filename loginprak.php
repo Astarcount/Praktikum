@@ -20,7 +20,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         <style type="text/css">
             body{
                 font-family: Arial, sans-serif;
-                background-color: rgb(65, 93, 206);
+                background: linear-gradient(to right, rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238) );
                 background-size: cover ;
                 background-position: center;
                 display: flex;
@@ -30,11 +30,12 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
                 margin: 0;
             }
             table{
-                background-color: rgb(140, 184, 237);
-                border: 3px solid black;
+                background-color: (to bottom rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238));
+                border: 3px solid white;
                 padding: 20px;
                 border-radius: 10px;
                 font-family: Arial, Helvetica, sans-serif;
+                color: white;
             }
             td{
                 padding: 5px;
@@ -43,6 +44,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
                 background-color: rgb(65, 93, 206);
                 padding: 10px;
                 border-radius: 5px;
+                color: white; 
             }
         </style>
     </head>
