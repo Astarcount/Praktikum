@@ -18,7 +18,7 @@ if (file_exists($file)) {
     $count = 0;
 }
 
-// Tambah 1 setiap kali halaman dibuka
+// Tambah 1 setiap kali halaman dibuka ,
 $count++;
 
 // Simpan kembali ke file
