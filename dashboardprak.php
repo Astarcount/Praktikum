@@ -1,34 +1,27 @@
 <?php
 session_start();
+
+// Redirect ke login jika belum login
 if (!isset($_SESSION['username'])) {
-    // User is already logged in, redirect to welcome page  
     header("Location: loginprak.php");
     exit();
 }
 
 $username = $_SESSION['username'];
 
-// Buat nama file untuk menyimpan jumlah login per user
+// Hitung jumlah login
 $file = "login_count_{$username}.txt";
-
-// Cek apakah file sudah ada, jika ya ambil isinya, kalau belum mulai dari 0
-if (file_exists($file)) {
-    $count = (int)file_get_contents($file);
-} else {
-    $count = 0;
-}
-
-// Tambah 1 setiap kali halaman dibuka
+$count = file_exists($file) ? (int)file_get_contents($file) : 0;
 $count++;
-
-// Simpan kembali ke file
 file_put_contents($file, $count);
 
-if(!isset($_SESSION["daftar"])){
+// Inisialisasi daftar jika belum ada
+if (!isset($_SESSION["daftar"])) {
     $_SESSION["daftar"] = [];
 }
 
-if(isset($_POST["nama"]) && isset($_POST["umur"])){
+// Menyimpan data baru
+if (isset($_POST["nama"]) && isset($_POST["umur"]) && is_numeric($_POST["umur"])) {
     $daftar = [
         "nama" => $_POST["nama"],
         "umur" => $_POST["umur"]
@@ -36,93 +29,150 @@ if(isset($_POST["nama"]) && isset($_POST["umur"])){
     $_SESSION["daftar"][] = $daftar;
 }
 
-?>
-<html>
-    <head>
-        <title>::Login Page::</title>
-        <style type="text/css">
-            body{
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-            body{
-                font-family: Arial, sans-serif;
-                background: linear-gradient(to right, rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238) );
-                background-size: cover ;
-                background-position: center;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-            }
-            table{
-                background-color: (to bottom rgb(87, 118, 243), rgb(31, 72, 238), rgb(87, 118, 243), rgb(31, 72, 238));
-                border: 3px solid white;
-                padding: 20px;
-                border-radius: 10px;
-                font-family: Arial, Helvetica, sans-serif;
-                color: white;
-            }
-            td{
-                padding: 5px;
-            }
-            button{
-                background-color: rgb(65, 93, 206);
-                padding: 10px;
-                border-radius: 5px;
-                color: white; 
-                cursor: pointer;
-            }
-             #logout{
-                cursor: pointer;
+// Untuk form update
+$data_daftar = [
+    "nama" => "",
+    "umur" => "",
+];
+$target = "dashboardprak.php";
 
-            }
-        </style>
-    </head>
-    <body>
-        <h1>
-            
-        <form action="dashboardprak.php" method="post">
-         <table>
+if (isset($_GET["index"])) {
+    $target = "update.php?index=" . $_GET["index"];
+    if ($_GET["index"] !== null) {
+        $index = $_GET["index"];
+        $data_daftar = $_SESSION["daftar"][$index];
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>::Login Page::</title>
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, rgb(87, 118, 243), rgb(31, 72, 238));
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 50px;
+        }
+
+        table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 3px solid white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        td {
+            padding: 5px 10px;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            width: 180px;
+        }
+
+        button {
+            background-color: rgb(65, 93, 206);
+            padding: 8px 14px;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        #logout {
+            background-color: darkred;
+        }
+
+        h1 {
+            color: black;
+            margin-bottom: 30px;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1><?php echo "Selamat datang " . htmlspecialchars($username) . " ke-" . $count; ?></h1>
+
+    <!-- FORM INPUT -->
+    <form action="<?php echo $target; ?>" method="post">
+        <table>
             <tr>
-                <td colspan="2" style="text-align: center;" >DAFTAR</td>
+                <td colspan="2" style="text-align: center;"><strong>DAFTAR</strong></td>
             </tr>
             <tr>
                 <td>Nama</td>
-                <td><input type="text" name="nama" /></td>
+                <td><input type="text" name="nama" value="<?php echo htmlspecialchars($data_daftar["nama"]); ?>" required></td>
             </tr>
             <tr>
                 <td>Umur</td>
-                <td><input type="text" name="umur" /></td>
+                <td><input type="text" name="umur" value="<?php echo htmlspecialchars($data_daftar["umur"]); ?>" required></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;">
-                    <button type="submit" >SUBMIT</button>
-                    <a href="logoutprak.php">
-                        <button id="logout" type="button" >LOGOUT</button>
-                    </a>
+                    <button type="submit">SUBMIT</button>
+                    <a href="logoutprak.php"><button id="logout" type="button">LOGOUT</button></a>
                 </td>
             </tr>
         </table>
-        <table>
-            <tr>
-                <td>Nama</td>
-                <td>Umur</td>
-            </tr>
-                <?php foreach($_SESSION["daftar"] as $daftar): ?>
-                 <tr>
-                    <td><?php echo $daftar["nama"] ?></td>
-                    <td><?php echo $daftar["umur"] ?></td>
-                 </tr>
-                 <?php endforeach; ?>
-        </table>
-        </form>
+    </form>
 
-        <?php echo "Selamat datang " . $username . " ke-" . $count  ; ?></h1>
-        
-    </body>
+    <!-- TABEL DAFTAR -->
+    <table border="1">
+        <tr>
+            <td><strong>Nama</strong></td>
+            <td><strong>Umur</strong></td>
+            <td><strong>Keterangan</strong></td>
+            <td><strong>Aksi</strong></td>
+        </tr>
+        <?php foreach ($_SESSION["daftar"] as $index => $daftar): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($daftar["nama"]); ?></td>
+                <td><?php echo htmlspecialchars($daftar["umur"]); ?></td>
+                <td>
+                    <?php
+                        $umur = $daftar["umur"];
+                        if ($umur < 20) {
+                            echo "Remaja";
+                        } elseif ($umur >= 20 && $umur < 40) {
+                            echo "Dewasa";
+                        } elseif ($umur >= 40) {
+                            echo "Tua";
+                        } else {
+                            echo "Tidak Diketahui";
+                        }
+                    ?>
+                </td>
+                <td>
+                    <a href="hapus.php?index=<?php echo $index; ?>">delete</a>
+                    <a href="dashboardprak.php?index=<?php echo $index; ?>">update</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</body>
 </html>
